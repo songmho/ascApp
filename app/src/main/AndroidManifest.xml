@@ -23,12 +23,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".AdressActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="example.mh.com.ascapp.MainActivity"/>
-            </activity>
 
         <activity android:name=".PopupAdressActivity"
             android:screenOrientation="portrait"

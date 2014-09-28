@@ -1,29 +1,19 @@
 package example.mh.com.ascapp;
 
-import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.widget.DrawerLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.Button;
 
-import java.util.ArrayList;
+public class MainActivity extends ActionBarActivity implements View.OnClickListener {
 
-public class MainActivity extends ActionBarActivity {
-    ActionBarDrawerToggle drawerToggle;
-    ListView drawer_listview;
-    ArrayList<Draweritem> data=null;
+    private int main_page =4;
+    ViewPager main_viewpager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,93 +21,109 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         getSupportActionBar().setIcon(new ColorDrawable(0x00FFFFFF));
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0xFF172987));
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0xFF003775));
 
+        final Button wallpost=(Button)findViewById(R.id.wallpost);
+        wallpost.setOnClickListener(this);
+        final Button calender=(Button)findViewById(R.id.calender);
+        calender.setOnClickListener(this);
+        final Button contact=(Button)findViewById(R.id.contact);
+        contact.setOnClickListener(this);
+        final Button setting=(Button)findViewById(R.id.setting);
+        setting.setOnClickListener(this);
 
-        LinearLayout drawer=(LinearLayout)findViewById(R.id.drawer);
-        FrameLayout main_layout=(FrameLayout)findViewById(R.id.main_layout);
-        drawer_listview=(ListView)findViewById(R.id.drawer_listview);
+        main_viewpager=(ViewPager)findViewById(R.id.main_viewpager);
+        main_viewpager.setAdapter(new adapter_pager(getSupportFragmentManager()));
+        main_viewpager.setCurrentItem(0);
+        wallpost.setSelected(true);
+        calender.setSelected(false);
+        contact.setSelected(false);
+        setting.setSelected(false);
 
-        drawer();
-        drawer_data();
+        main_viewpager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageSelected(int i) {
+                switch (i){
+                    case 0:
+                        wallpost.setSelected(true);
+                        calender.setSelected(false);
+                        contact.setSelected(false);
+                        setting.setSelected(false);
+                        break;
 
-        drawer_listview.setOnItemClickListener(new Drawerlistviewitemclick());
+                    case 1:
+                        wallpost.setSelected(false);
+                        calender.setSelected(true);
+                        contact.setSelected(false);
+                        setting.setSelected(false);
+                        break;
 
-        ImageView profile=(ImageView)findViewById(R.id.profile);
-        TextView drawer_number=(TextView)findViewById(R.id.drawer_number);
-        TextView drawer_name=(TextView)findViewById(R.id.drawer_name);
+                    case 2:
+                        wallpost.setSelected(false);
+                        calender.setSelected(false);
+                        contact.setSelected(true);
+                        setting.setSelected(false);
+                        break;
 
-        profile.setImageResource(R.drawable.setup);
-        drawer_number.setText("32기");
-        drawer_name.setText("송명호");
+                    case 3:
+                        wallpost.setSelected(false);
+                        calender.setSelected(false);
+                        contact.setSelected(false);
+                        setting.setSelected(true);
+                        break;
+                }
+            }
 
+            @Override
+            public void onPageScrollStateChanged(int i) {            }
 
+            @Override
+            public void onPageScrolled(int i, float v, int i2) {            }
+
+        });
     }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(drawerToggle.onOptionsItemSelected(item)){
-            return true;
+
+    public void onClick(View v){
+        switch (v.getId()){
+            case R.id.wallpost:
+                main_viewpager.setCurrentItem(0);
+                break;
+            case R.id.calender:
+                main_viewpager.setCurrentItem(1);
+                break;
+            case R.id.contact:
+                main_viewpager.setCurrentItem(2);
+                break;
+            case R.id.setting:
+                main_viewpager.setCurrentItem(3);
+                break;
         }
-        return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        drawerToggle.onConfigurationChanged(newConfig);
-    }
+    private class adapter_pager extends FragmentPagerAdapter {
+        public adapter_pager(FragmentManager fm) {
+            super(fm);
+        }
 
-    private void drawer() {
-        DrawerLayout main_drawerlayout=(DrawerLayout)findViewById(R.id.main_Drawerlayout);
-        drawerToggle=new ActionBarDrawerToggle(this,main_drawerlayout,R.drawable.icon_drawer,R.string.open,R.string.close){
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-            }
-        };
-
-        drawerToggle.syncState();
-        main_drawerlayout.setDrawerListener(drawerToggle);
-
-    }
-
-    private void drawer_data() {
-        data=new ArrayList<Draweritem>();
-
-        Draweritem plan= new Draweritem(R.drawable.plan,"ASC 일정");
-        Draweritem adress=new Draweritem(R.drawable.adress,"주소록");
-        Draweritem setup=new Draweritem(R.drawable.setup,"설정");
-
-        data.add(plan);
-        data.add(adress);
-        data.add(setup);
-
-        DrawerAdapter drawerAdapter=new DrawerAdapter(this,R.layout.draweritem,data);
-
-        drawer_listview.setAdapter(drawerAdapter);
-
-    }
-
-    private class Drawerlistviewitemclick implements AdapterView.OnItemClickListener {
         @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-            switch (position){
+        public Fragment getItem(int i) {
+            switch (i){
                 case 0:
-                    Toast.makeText(getApplicationContext(),"ASC 일정",Toast.LENGTH_SHORT).show();
-                    break;
+                    return new WallpostActivity();
                 case 1:
-                    startActivity(new Intent(MainActivity.this,AdressActivity.class));
-                    break;
+                    return new CalenderActivity();
                 case 2:
-                    Toast.makeText(getApplicationContext(),"설정",Toast.LENGTH_SHORT).show();
-                    break;
+                    return new AdressActivity();
+                case 3:
+                    return new SettingActivity();
+                default:
+                    return null;
             }
+        }
+
+        @Override
+        public int getCount() {
+            return main_page;
         }
     }
 }

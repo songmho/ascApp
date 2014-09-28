@@ -1,5 +1,6 @@
 package example.mh.com.ascapp;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,12 +18,11 @@ public class AdressAdapter extends BaseAdapter {
 
     private ArrayList<Adressitem> data;
     private LayoutInflater inflater;
-    private int layout;
+    Context context;
 
-    public AdressAdapter(Context context, int layout, ArrayList<Adressitem> data){
-        this.inflater=(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    public AdressAdapter(Context context, ArrayList<Adressitem> data){
+        this.context=context;
         this.data=data;
-        this.layout=layout;
     }
 
     @Override
@@ -43,7 +43,8 @@ public class AdressAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View view, ViewGroup viewGroup) {
         if(view==null){
-            view=inflater.inflate(layout,viewGroup,false);
+            inflater=(LayoutInflater)context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+            view=inflater.inflate(R.layout.adressitem,viewGroup,false);
         }
 
         Adressitem adressitem=data.get(position);
