@@ -3,14 +3,14 @@ package example.mh.com.ascapp;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 
 import java.util.ArrayList;
 
@@ -19,10 +19,16 @@ import java.util.ArrayList;
  */
 public class AdressActivity extends Fragment {
 
-    ArrayList<Adressitem> data=null;
-    ListView adress_listview;
+    //ArrayList<String> listgroup=null;
+    ExpandableListView adress_listview;
     LinearLayout adressactivity;
     Context context;
+
+    ArrayList<Adressgroupitem> group;
+    ArrayList<Adresschilditem> child;
+    private ArrayList<Adressgroupitem> item;
+    private AdressAdapter adapter;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,40 +36,43 @@ public class AdressActivity extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState) {
         adressactivity=(LinearLayout)inflater.inflate(R.layout.activity_adress,container,false);
 
         context=getActivity();
 
-        adress_listview=(ListView)adressactivity.findViewById(R.id.adress_listview);
-        data=new ArrayList<Adressitem>();
-        Adressitem [] item=new Adressitem[100];
-
-        for(int i=0;i<item.length;i++){
-            item[i]=new Adressitem(R.drawable.setup,"송명호","32기","010-2016-2689");
-        }
-
-        for (Adressitem anItem : item) {
-            data.add(anItem);
-        }
-
-        AdressAdapter adressAdapter=new AdressAdapter(context,data);
-
-        adress_listview.setAdapter(adressAdapter);
-
-        adress_listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                switch (i){
-                    case 0:
-                        Intent intent=new Intent(getActivity(),PopupAdressActivity.class);
-                        startActivity(intent);
-                        break;
-                }
-            }
-        });
+        adress_listview=(ExpandableListView)adressactivity.findViewById(R.id.adress_listview);
+        item= prepareListData();
+        adapter=new AdressAdapter(context,item);
+        adress_listview.setAdapter(adapter);
 
         return adressactivity;
+    }
+
+    private ArrayList<Adressgroupitem> prepareListData() {
+
+        String group_names[]={"1기","2기","3기","4기"};
+        String name[]={"송명호","송명호","송명호","송명호","송명호","송명호","송명호","송명호"};
+        String phone[]={"010-2016-2689","010-2016-2689","010-2016-2689","010-2016-2689","010-2016-2689","010-2016-2689","010-2016-2689","010-2016-2689","010-2016-2689"};
+
+        int size = 2;
+        int j = 0;
+
+       ArrayList<Adressgroupitem> group=new ArrayList<Adressgroupitem>();
+        for(String group_name: group_names){
+            Adressgroupitem adressgroupitem=new Adressgroupitem(group_name);
+
+            child=new ArrayList<Adresschilditem>();
+            for (;j<size;j++){
+                Adresschilditem adresschilditem=new Adresschilditem(name[j],phone[j]);
+                child.add(adresschilditem);
+            }
+            adressgroupitem.setItems(child);
+            group.add(adressgroupitem);
+
+            size=size+2;
+        }
+        return group;
     }
 
 }
